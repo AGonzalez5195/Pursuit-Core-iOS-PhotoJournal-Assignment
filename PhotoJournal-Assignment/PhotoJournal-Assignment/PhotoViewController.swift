@@ -12,6 +12,14 @@ class PhotoViewController: UIViewController {
     
     @IBOutlet weak var pictureCollectionView: UICollectionView!
     
+    
+    @IBAction func addPhotoButtonPressed(_ sender: UIBarButtonItem) {
+        let MainStoryBoard = UIStoryboard(name: "Main", bundle: nil)
+        let destVC = MainStoryBoard.instantiateViewController(identifier: "AddPhotoVC") as! AddPhotoViewController
+        
+        self.present(destVC, animated: true, completion: nil)
+    }
+    
     var allPhotos = [Photo]() {
         didSet {
             pictureCollectionView.reloadData()

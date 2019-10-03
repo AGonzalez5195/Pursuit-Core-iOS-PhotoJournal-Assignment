@@ -16,6 +16,7 @@
 		55FA49E32346850A0001D065 /* PhotoJournal_AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA49E22346850A0001D065 /* PhotoJournal_AssignmentTests.swift */; };
 		55FA49EE234689270001D065 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA49ED234689270001D065 /* PhotoCollectionViewCell.swift */; };
 		55FA49F023468A350001D065 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA49EF23468A350001D065 /* Photo.swift */; };
+		55FA49F223468F090001D065 /* AddPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA49F123468F090001D065 /* AddPhotoViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +43,7 @@
 		55FA49E42346850A0001D065 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55FA49ED234689270001D065 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		55FA49EF23468A350001D065 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		55FA49F123468F090001D065 /* AddPhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				55FA49EF23468A350001D065 /* Photo.swift */,
 				55FA49ED234689270001D065 /* PhotoCollectionViewCell.swift */,
 				55FA49D1234685080001D065 /* Main.storyboard */,
+				55FA49F123468F090001D065 /* AddPhotoViewController.swift */,
 				55FA49D42346850A0001D065 /* Assets.xcassets */,
 				55FA49D62346850A0001D065 /* LaunchScreen.storyboard */,
 				55FA49D92346850A0001D065 /* Info.plist */,
@@ -207,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				55FA49D0234685080001D065 /* PhotoViewController.swift in Sources */,
+				55FA49F223468F090001D065 /* AddPhotoViewController.swift in Sources */,
 				55FA49F023468A350001D065 /* Photo.swift in Sources */,
 				55FA49EE234689270001D065 /* PhotoCollectionViewCell.swift in Sources */,
 				55FA49CC234685080001D065 /* AppDelegate.swift in Sources */,
