@@ -30,6 +30,10 @@ class PhotoViewController: UIViewController {
         allPhotos = Photo.getPictures()
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
@@ -51,6 +55,12 @@ extension PhotoViewController: UICollectionViewDataSource {
 
 extension PhotoViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 370  , height: 393)
+        return CGSize(width: 360  , height: 470)
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        return UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 50)
+//    }
+    //Use for horizontal shit
 }
+
