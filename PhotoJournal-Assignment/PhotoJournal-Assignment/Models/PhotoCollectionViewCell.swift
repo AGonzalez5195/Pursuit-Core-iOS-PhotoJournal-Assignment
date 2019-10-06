@@ -14,10 +14,16 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var photoDescription: UILabel!
     
+    var buttonFunction: (()->())?
+    
+    @IBAction func favoriteButtonPressed(_ sender: UIButton) {
+          if let closure = buttonFunction {
+              closure()
+          }
+      }
+    
     func configureCell(from photo: Photo){
-        self.layer.cornerRadius = 20
-        photoImage.layer.cornerRadius = 5
-        photoImage.image = UIImage(named: photo.imageName)
-        photoDescription.text = photo.description
-    }
+          self.layer.cornerRadius = 20
+          photoDescription.text = photo.description
+      }
 }
