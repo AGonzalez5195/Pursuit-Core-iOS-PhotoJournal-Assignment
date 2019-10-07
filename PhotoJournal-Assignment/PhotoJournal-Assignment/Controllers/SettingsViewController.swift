@@ -13,15 +13,11 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var bannerImage: UIImageView!
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var visualBlurEffect: UIVisualEffectView!
-    
     @IBOutlet var settingsLabels: [UILabel]!
-    
     @IBOutlet weak var scrollDirectionSegment: UISegmentedControl!
-    
     @IBOutlet weak var themeSegment: UISegmentedControl!
     
     var delegate: setSettingsDelegate?
-    
     
     @IBAction func themeSegmentChanged(_ sender: UISegmentedControl) {
         UserDefaultsWrapper.shared.store(Theme: sender.selectedSegmentIndex)
@@ -29,6 +25,10 @@ class SettingsViewController: UIViewController {
         delegate?.loadUserSettings()
     }
     
+    @IBAction func scrollDirectionSegmentChanged(_ sender: UISegmentedControl) {
+        UserDefaultsWrapper.shared.store(scrollDirection: sender.selectedSegmentIndex)
+        delegate?.loadUserSettings()
+    }
     
     private func setBGTheme() {
         let userSelectedTheme = UserDefaultsWrapper.shared.getTheme()
@@ -42,20 +42,24 @@ class SettingsViewController: UIViewController {
     }
     
     private func setCircleOutline() {
-          profileImage.layer.cornerRadius = profileImage.frame.size.width/2
-          profileImage.clipsToBounds = true //Lines 85 and 86 are used to adjust the corners so that colorView is a circle.
-          
-          profileImage.layer.borderColor = UIColor.black.cgColor
-          profileImage.layer.borderWidth = 4.0
-      }
+        profileImage.layer.cornerRadius = profileImage.frame.size.width/2
+        profileImage.clipsToBounds = true
+        profileImage.layer.borderColor = UIColor.black.cgColor
+        profileImage.layer.borderWidth = 4.0
+    }
+    
+    private func setSegmentControlStates(){
+        let userSelectedTheme = UserDefaultsWrapper.shared.getTheme()
+        themeSegment.selectedSegmentIndex = userSelectedTheme!
+        
+        guard let userSelectedScrollDirection = UserDefaultsWrapper.shared.getScrollDirection() else { return }
+        scrollDirectionSegment.selectedSegmentIndex = userSelectedScrollDirection
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setBGTheme()
-        let userSelectedTheme = UserDefaultsWrapper.shared.getTheme()
-        themeSegment.selectedSegmentIndex = userSelectedTheme!
+        setSegmentControlStates()
         setCircleOutline()
-        
     }
-    
 }

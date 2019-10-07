@@ -12,7 +12,7 @@ class PhotoViewController: UIViewController {
     
     //MARK: -- Outlets
     @IBOutlet weak var pictureCollectionView: UICollectionView!
-   
+    
     @IBOutlet weak var toolBar: UIToolbar!
     
     @IBOutlet weak var addButton: UIBarButtonItem!
@@ -67,14 +67,13 @@ class PhotoViewController: UIViewController {
         actionSheet.addAction(shareAction)
         actionSheet.addAction(editAction)
         actionSheet.addAction(deleteAction)
-      
+        
         self.present(actionSheet, animated: true, completion: nil)
     }
     
     private func presentShareMenu(id: Int){
         let image = [UIImage(data: self.allPhotos[id].image)]
         let activityVC = UIActivityViewController(activityItems: image, applicationActivities: nil)
-        
         self.present(activityVC,animated: true)
     }
     
@@ -98,7 +97,7 @@ class PhotoViewController: UIViewController {
         addPhotoVC.currentState = .isEditingPhoto
         self.present(addPhotoVC, animated: true, completion: nil)
     }
-
+    
     private func loadPhotoJournal(){
         do {
             allPhotos = try PhotoPersistenceHelper.manager.getPhotos()
@@ -116,7 +115,6 @@ class PhotoViewController: UIViewController {
         
     }
     
-    
     private func setLightMode() {
         isInDarkMode = false
         view.backgroundColor = #colorLiteral(red: 0.8974782825, green: 0.7157379985, blue: 0.6262267232, alpha: 1)
@@ -133,8 +131,6 @@ class PhotoViewController: UIViewController {
         super.viewDidLoad()
         loadPhotoJournal()
         loadUserSettings()
-        print(isInDarkMode)
-        
     }
 }
 
@@ -177,13 +173,19 @@ extension PhotoViewController: loadUserDataDelegate {
     }
 }
 
+
 extension PhotoViewController: setSettingsDelegate {
     func loadUserSettings() {
         let savedUserTheme = UserDefaultsWrapper.shared.getTheme()
         savedUserTheme == 0 ? setDarkMode() : setLightMode()
+        
+        let savedUserScrollDirection = UserDefaultsWrapper.shared.getScrollDirection()
+        let scrollDirection = savedUserScrollDirection == 0 ? UICollectionView.ScrollDirection.vertical : UICollectionView.ScrollDirection.horizontal
+        
+        if let collectionViewFlowLayout = pictureCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            collectionViewFlowLayout.scrollDirection = scrollDirection
+        }
     }
-    
-    
 }
 
 
