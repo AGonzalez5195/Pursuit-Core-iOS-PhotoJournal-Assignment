@@ -99,19 +99,19 @@ class AddPhotoViewController: UIViewController {
     
     private func checkPhotoLibraryAccess() {
         let status = PHPhotoLibrary.authorizationStatus()
-        
+
         switch status {
         case .authorized:
             presentImagePicker()
-            
+
         case .denied:
             let alertVC = UIAlertController(title: "Denied", message: "Photo Library access is required to use this app. Please change your preference in the Settings app", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction (title: "Ok", style: .default, handler: nil))
             self.present(alertVC, animated: true, completion: nil)
-            
+
         case .restricted:
             print("restricted")
-            
+
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization({status in
                 switch status {
@@ -160,6 +160,7 @@ class AddPhotoViewController: UIViewController {
         super.viewDidLoad()
         setUpView()
         checkUserSelectedTheme()
+        
     }
 }
 

@@ -41,7 +41,12 @@ class SettingsViewController: UIViewController {
         bannerImage.image = userSelectedTheme == 0 ? #imageLiteral(resourceName: "darkModeBanner") : #imageLiteral(resourceName: "lightModeBanner")
     }
     
-    private func setCircleOutline() {
+    private func setUpProfileIcon() {
+        profileImage.isUserInteractionEnabled = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.tapGesture))
+        profileImage.addGestureRecognizer(tapGesture)
+        
         profileImage.layer.cornerRadius = profileImage.frame.size.width/2
         profileImage.clipsToBounds = true
         profileImage.layer.borderColor = UIColor.black.cgColor
@@ -56,10 +61,24 @@ class SettingsViewController: UIViewController {
         scrollDirectionSegment.selectedSegmentIndex = userSelectedScrollDirection
     }
     
+    @objc func tapGesture(){
+        let imagePickerViewController = UIImagePickerController()
+        imagePickerViewController.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
+        present(imagePickerViewController, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setBGTheme()
         setSegmentControlStates()
-        setCircleOutline()
+        setUpProfileIcon()
+    }
+}
+
+extension SettingsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+        self.profileImage.image = image
+        dismiss(animated: true, completion: nil)
     }
 }
