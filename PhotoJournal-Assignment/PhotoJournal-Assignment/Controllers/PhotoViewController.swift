@@ -12,11 +12,8 @@ class PhotoViewController: UIViewController {
     
     //MARK: -- Outlets
     @IBOutlet weak var pictureCollectionView: UICollectionView!
-    
     @IBOutlet weak var toolBar: UIToolbar!
-    
     @IBOutlet weak var addButton: UIBarButtonItem!
-    
     @IBOutlet weak var settingsButton: UIBarButtonItem!
     
     //MARK: -- Properties
@@ -57,7 +54,8 @@ class PhotoViewController: UIViewController {
             self.deletePhoto(with: id) }
         
         let editAction = UIAlertAction(title: "Edit", style: .default) { (action) in
-            self.editPhoto(photoToEdit: photo) }
+            self.editPhoto(photoToEdit: photo)
+        }
         
         let shareAction = UIAlertAction(title: "Share", style: .default, handler: {(action) in
             self.presentShareMenu(id: id)
@@ -71,11 +69,13 @@ class PhotoViewController: UIViewController {
         self.present(actionSheet, animated: true, completion: nil)
     }
     
+    
     private func presentShareMenu(id: Int){
         let image = [UIImage(data: self.allPhotos[id].image)]
         let activityVC = UIActivityViewController(activityItems: image, applicationActivities: nil)
         self.present(activityVC,animated: true)
     }
+    
     
     private func deletePhoto(with id: Int) {
         DispatchQueue.global(qos: .utility).async {
@@ -90,21 +90,24 @@ class PhotoViewController: UIViewController {
         }
     }
     
+    
     private func editPhoto(photoToEdit: Photo){
         let photoToEdit = photoToEdit
         let addPhotoVC = self.storyboard?.instantiateViewController(withIdentifier: "AddPhotoVC") as! AddPhotoViewController
         addPhotoVC.currentPhoto = photoToEdit
         addPhotoVC.currentState = .isEditingPhoto
+        addPhotoVC.isInDarkmode = self.isInDarkMode
+        addPhotoVC.delegate = self
         self.present(addPhotoVC, animated: true, completion: nil)
     }
+    
     
     private func loadPhotoJournal(){
         do {
             allPhotos = try PhotoPersistenceHelper.manager.getPhotos()
-        } catch {
-            print(error)
-        }
+        } catch {}
     }
+    
     
     private func setDarkMode(){
         isInDarkMode = true
@@ -115,6 +118,7 @@ class PhotoViewController: UIViewController {
         
     }
     
+    
     private func setLightMode() {
         isInDarkMode = false
         view.backgroundColor = #colorLiteral(red: 0.8974782825, green: 0.7157379985, blue: 0.6262267232, alpha: 1)
@@ -122,6 +126,7 @@ class PhotoViewController: UIViewController {
         toolBar.barStyle = .default
         toolBar.barTintColor = #colorLiteral(red: 0.9895533919, green: 0.6961515546, blue: 0.441628933, alpha: 1)
     }
+    
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -131,6 +136,10 @@ class PhotoViewController: UIViewController {
         super.viewDidLoad()
         loadPhotoJournal()
         loadUserSettings()
+        
+        for (index, photo) in allPhotos.enumerated() {
+            print( "Index:\(index), Name: \(photo.description), ID: \(photo.id.description))")
+        }
     }
 }
 
@@ -144,6 +153,8 @@ extension PhotoViewController: UICollectionViewDataSource {
             noDataLabel.textColor = #colorLiteral(red: 0.7722676396, green: 0.7723984122, blue: 0.7722503543, alpha: 0.6343254842)
             noDataLabel.textAlignment = .center
             pictureCollectionView.backgroundView = noDataLabel
+        } else {
+            pictureCollectionView.backgroundView = nil
         }
         return allPhotos.count
     }
@@ -187,14 +198,3 @@ extension PhotoViewController: setSettingsDelegate {
         }
     }
 }
-
-
-
-
-
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        return UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 50)
-//    }
-//Use for horizontal shit
-
-

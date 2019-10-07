@@ -150,8 +150,8 @@
 		55FEEAE12346F7960083593A /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
-				55FEEAE22346F7B90083593A /* PersistenceHelper.swift */,
 				55FEEAE42346F8960083593A /* PhotoPersistenceHelper.swift */,
+				55FEEAE22346F7B90083593A /* PersistenceHelper.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";

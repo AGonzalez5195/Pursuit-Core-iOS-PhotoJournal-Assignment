@@ -17,6 +17,7 @@ class AddPhotoViewController: UIViewController {
     @IBOutlet weak var visualBlurEffect: UIVisualEffectView!
     @IBOutlet weak var photoLibraryButton: UIBarButtonItem!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
+    
     //MARK: -- Properties
     var delegate: loadUserDataDelegate?
     var currentPhoto: Photo!
@@ -32,21 +33,72 @@ class AddPhotoViewController: UIViewController {
     @IBAction func addPhotoButtonPressed(_ sender: UIBarButtonItem) {
         if photoLibraryAccess == true {
             presentImagePicker()
-            
         } else {
             checkPhotoLibraryAccess()
         }
     }
     
     @IBAction func saveButtonPressed(_ sender: UIButton) {
-        switch currentState {
-        case .isAddingPhoto:
-            saveNewEntry()
-        case .isEditingPhoto:
-            overwriteExistingEntry()
-        }
+        saveEntry()
     }
     //MARK: -- Methods
+    
+    private func saveEntry(){
+        guard let text = descriptionTextView.text else { return }
+        guard let image = image.image else { return }
+        guard let data = image.jpegData(compressionQuality: 0.5) else { return }
+        let photo = Photo(description: text, image: data, date: Photo.getTimeStamp(), id: Photo.getIDForNewPhoto())
+        do {
+            switch currentState {
+            case .isAddingPhoto:
+                try? PhotoPersistenceHelper.manager.save(newPhoto: photo)
+                delegate?.loadUserJournal()
+                
+            case .isEditingPhoto:
+                try? PhotoPersistenceHelper.manager.overwritePhoto(photo: photo, id: currentPhoto.id)
+                delegate?.loadUserJournal()
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    
+    private func checkPhotoLibraryAccess() {
+        let status = PHPhotoLibrary.authorizationStatus()
+        
+        switch status {
+        case .authorized:
+            presentImagePicker()
+            
+        case .denied:
+            let alertVC = UIAlertController(title: "Denied", message: "Photo Library access is required to use this app. Please change your preference in the Settings app", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction (title: "Ok", style: .default, handler: nil))
+            self.present(alertVC, animated: true, completion: nil)
+            
+        case .restricted:
+            print("restricted")
+            
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({status in
+                switch status {
+                case .authorized:
+                    self.photoLibraryAccess = true
+                    print(status)
+                case .denied:
+                    self.photoLibraryAccess = false
+                    print("denied")
+                case .notDetermined:
+                    print("not determined")
+                case .restricted:
+                    print("restricted")
+                }
+            })
+        }
+    }
+    
     
     private func presentImagePicker(){
         let imagePickerViewController = UIImagePickerController()
@@ -67,100 +119,32 @@ class AddPhotoViewController: UIViewController {
         }
     }
     
-    private func overwriteExistingEntry(){
-        guard let text = descriptionTextView.text else {return}
-        guard let image = image.image else {return}
-        guard let data = image.jpegData(compressionQuality: 0.5) else { return }
-        
-        let editedPhoto = Photo(description: text, image: data, date: currentPhoto.date, id: Photo.getIDForNewPhoto())
-        do {
-            try? PhotoPersistenceHelper.manager.overwritePhoto(editedPhoto: editedPhoto, id: self.currentPhoto.id)
-            DispatchQueue.main.async {
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-        delegate?.loadUserJournal()
-    }
-    
-    private func saveNewEntry(){
-        guard let text = descriptionTextView.text else {return}
-        guard let image = image.image else { return }
-        guard let data = image.jpegData(compressionQuality: 0.5) else { return }
-        
-        let newPhoto = Photo(description: text, image: data, date: getTimeStamp(), id: Photo.getIDForNewPhoto())
-        do {
-            try? PhotoPersistenceHelper.manager.save(newPhoto: newPhoto)
-            DispatchQueue.main.async {
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-        delegate?.loadUserJournal()
-    }
-    
-    private func checkPhotoLibraryAccess() {
-        let status = PHPhotoLibrary.authorizationStatus()
-
-        switch status {
-        case .authorized:
-            presentImagePicker()
-
-        case .denied:
-            let alertVC = UIAlertController(title: "Denied", message: "Photo Library access is required to use this app. Please change your preference in the Settings app", preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction (title: "Ok", style: .default, handler: nil))
-            self.present(alertVC, animated: true, completion: nil)
-
-        case .restricted:
-            print("restricted")
-
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization({status in
-                switch status {
-                case .authorized:
-                    self.photoLibraryAccess = true
-                    print(status)
-                case .denied:
-                    self.photoLibraryAccess = false
-                    print("denied")
-                case .notDetermined:
-                    print("not determined")
-                case .restricted:
-                    print("restricted")
-                }
-            })
-        }
-    }
-    
-    func getTimeStamp() -> String {
-        let currentData = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMM-dd-yyyy, h:mm a"
-        
-        return dateFormatter.string(from: currentData)
-    }
     
     private func setDarkMode(){
-        [photoLibraryButton, cameraButton].forEach({$0?.tintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)})
+        [photoLibraryButton, cameraButton].forEach({ $0?.tintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) })
         toolBar.barStyle = .black
         toolBar.barTintColor = #colorLiteral(red: 0.09329102188, green: 0.09929855913, blue: 0.1066427454, alpha: 1)
         visualBlurEffect.effect = UIBlurEffect(style: .dark)
     }
     
+    
     private func setLightMode(){
-         [photoLibraryButton, cameraButton].forEach({$0?.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)})
-         toolBar.barStyle = .default
-         toolBar.barTintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-         visualBlurEffect.effect = UIBlurEffect(style: .extraLight)
-     }
+        [photoLibraryButton, cameraButton].forEach({ $0?.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) })
+        toolBar.barStyle = .default
+        toolBar.barTintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        visualBlurEffect.effect = UIBlurEffect(style: .extraLight)
+    }
+    
     
     private func checkUserSelectedTheme(){
         isInDarkmode == true ? setDarkMode() : setLightMode()
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpView()
         checkUserSelectedTheme()
-        
     }
 }
 

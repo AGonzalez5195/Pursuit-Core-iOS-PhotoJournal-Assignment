@@ -24,4 +24,12 @@ struct Photo: Codable {
         }
        return 0
     }
+    
+    static func getTimeStamp() -> String {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM-dd-yyyy, h:mm a"
+        
+        return dateFormatter.string(from: currentDate)
+    }
 }

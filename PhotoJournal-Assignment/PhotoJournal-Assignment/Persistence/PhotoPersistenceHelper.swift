@@ -10,7 +10,7 @@ import Foundation
 
 struct PhotoPersistenceHelper {
     private init() {}
-    private let persistenceHelper = PersistenceHelper<Photo>(fileName: "photozzzzzzzzz.plist")
+    private let persistenceHelper = PersistenceHelper<Photo>(fileName: "photoJournal.plist")
 
     static let manager = PhotoPersistenceHelper()
     
@@ -30,9 +30,17 @@ struct PhotoPersistenceHelper {
         }
     }
     
-    func overwritePhoto(editedPhoto: Photo, id: Int) throws {
+    func overwritePhoto(photo: Photo, id: Int) throws {
         let photos = try getPhotos()
-        guard let indexOfOldPhoto = photos.firstIndex(where: {$0.id == id}) else { return }
-        try persistenceHelper.saveAtIndex(newElement: editedPhoto, index: indexOfOldPhoto)
+        var oldIndex = Int()
+        //get original photo index
+        for (index, photo) in photos.enumerated() {
+            if photo.id == id {
+                oldIndex = index
+            }
+        }
+        try persistenceHelper.saveAtIndex(newElement: photo, indexToSaveAt: oldIndex)
+        try deletePhoto(specificID: id)
+        
     }
 }
