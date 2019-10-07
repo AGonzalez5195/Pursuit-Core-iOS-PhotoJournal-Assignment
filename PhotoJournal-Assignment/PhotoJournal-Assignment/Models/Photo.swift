@@ -11,6 +11,7 @@ import Foundation
 struct Photo: Codable {
     let description: String
     let image: Data
+    let date: String
     let id: Int
     
     static func getIDForNewPhoto() -> Int {
@@ -24,8 +25,3 @@ struct Photo: Codable {
        return 0
     }
 }
-
-
-//    static func getPictures()-> [Photo]{
-//        return ([Photo(description: "Mr Egghead", imageName: "egghead", id: 0), Photo(description: "Dont Hug Me I'm Scared", imageName: "yellow", id: 1)])
-//    }

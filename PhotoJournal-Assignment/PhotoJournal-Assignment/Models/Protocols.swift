@@ -8,6 +8,10 @@
 
 import Foundation
 
-protocol loadUserDataDelegate{
+protocol loadUserDataDelegate: AnyObject {
     func loadUserJournal()
+}
+
+protocol setSettingsDelegate: AnyObject {
+    func loadUserSettings ()
 }

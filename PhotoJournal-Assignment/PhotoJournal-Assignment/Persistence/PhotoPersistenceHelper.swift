@@ -9,6 +9,9 @@
 import Foundation
 
 struct PhotoPersistenceHelper {
+    private init() {}
+    private let persistenceHelper = PersistenceHelper<Photo>(fileName: "photozzzzzzzzz.plist")
+
     static let manager = PhotoPersistenceHelper()
     
     func save(newPhoto: Photo) throws {
@@ -19,16 +22,17 @@ struct PhotoPersistenceHelper {
         return try persistenceHelper.getObjects()
     }
     
-    func deletePhoto(withID: Int) throws {
+    func deletePhoto(specificID: Int) throws {
         do {
             let photos = try getPhotos()
-            let newPhotos = photos.filter { $0.id != withID}
+            let newPhotos = photos.filter { $0.id != specificID}
             try persistenceHelper.replace(elements: newPhotos)
         }
     }
-    //Makes a new array that copies the original array in every way other than that it excludes the favorite with the specific ID.
     
-    private let persistenceHelper = PersistenceHelper<Photo>(fileName: "photosss.plist")
-    
-    private init() {}
+    func overwritePhoto(editedPhoto: Photo, id: Int) throws {
+        let photos = try getPhotos()
+        guard let indexOfOldPhoto = photos.firstIndex(where: {$0.id == id}) else { return }
+        try persistenceHelper.saveAtIndex(newElement: editedPhoto, index: indexOfOldPhoto)
+    }
 }

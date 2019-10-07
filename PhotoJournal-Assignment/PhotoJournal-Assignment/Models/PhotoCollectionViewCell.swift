@@ -14,16 +14,24 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var photoDescription: UILabel!
     
+    @IBOutlet weak var photoDateLabel: UILabel!
+    
+    @IBOutlet weak var moreOptionsButton: UIButton!
+    
     var buttonFunction: (()->())?
     
     @IBAction func favoriteButtonPressed(_ sender: UIButton) {
-          if let closure = buttonFunction {
-              closure()
-          }
-      }
+        if let closure = buttonFunction {
+            closure()
+        }
+    }
     
     func configureCell(from photo: Photo){
-          self.layer.cornerRadius = 20
-          photoDescription.text = photo.description
-      }
+        self.layer.cornerRadius = 20
+        photoDescription.text = photo.description
+        photoDateLabel.text = photo.date
+        moreOptionsButton.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+        let image = UIImage(data: photo.image)
+        photoImage.image = image
+    }
 }

@@ -7,16 +7,22 @@
 //
 
 import UIKit
-
-
+import Photos
 
 class AddPhotoViewController: UIViewController {
     //MARK: -- Outlets
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var descriptionTextView: UITextView!
-    
+    @IBOutlet weak var toolBar: UIToolbar!
+    @IBOutlet weak var visualBlurEffect: UIVisualEffectView!
+    @IBOutlet weak var photoLibraryButton: UIBarButtonItem!
+    @IBOutlet weak var cameraButton: UIBarButtonItem!
     //MARK: -- Properties
-    var delegate : loadUserDataDelegate?
+    var delegate: loadUserDataDelegate?
+    var currentPhoto: Photo!
+    var currentState: AddOrEdit = .isAddingPhoto
+    var photoLibraryAccess = false
+    var isInDarkmode = Bool()
     
     //MARK: --IBActions
     @IBAction func cancelButtonPressed(_ sender: UIButton) {
@@ -24,41 +30,140 @@ class AddPhotoViewController: UIViewController {
     }
     
     @IBAction func addPhotoButtonPressed(_ sender: UIBarButtonItem) {
+        if photoLibraryAccess == true {
+            presentImagePicker()
+            
+        } else {
+            checkPhotoLibraryAccess()
+        }
+    }
+    
+    @IBAction func saveButtonPressed(_ sender: UIButton) {
+        switch currentState {
+        case .isAddingPhoto:
+            saveNewEntry()
+        case .isEditingPhoto:
+            overwriteExistingEntry()
+        }
+    }
+    //MARK: -- Methods
+    
+    private func presentImagePicker(){
         let imagePickerViewController = UIImagePickerController()
         imagePickerViewController.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
         present(imagePickerViewController, animated: true, completion: nil)
     }
     
-    @IBAction func saveButtonPressed(_ sender: UIButton) {
+    private func setUpView(){
+        image.layer.cornerRadius = 40
+        if currentState == .isEditingPhoto {
+            image.image = UIImage(data: currentPhoto.image)
+            descriptionTextView.text = currentPhoto.description
+            descriptionTextView.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        } else {
+            image.image = #imageLiteral(resourceName: "addPhoto")
+            descriptionTextView.text = "Enter photo description..."
+            descriptionTextView.textColor = UIColor.lightGray
+        }
+    }
+    
+    private func overwriteExistingEntry(){
+        guard let text = descriptionTextView.text else {return}
+        guard let image = image.image else {return}
+        guard let data = image.jpegData(compressionQuality: 0.5) else { return }
+        
+        let editedPhoto = Photo(description: text, image: data, date: currentPhoto.date, id: Photo.getIDForNewPhoto())
+        do {
+            try? PhotoPersistenceHelper.manager.overwritePhoto(editedPhoto: editedPhoto, id: self.currentPhoto.id)
+            DispatchQueue.main.async {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+        delegate?.loadUserJournal()
+    }
+    
+    private func saveNewEntry(){
         guard let text = descriptionTextView.text else {return}
         guard let image = image.image else { return }
         guard let data = image.jpegData(compressionQuality: 0.5) else { return }
         
-        
-        
-        let newPhoto = Photo(description: text, image: data, id: Photo.getIDForNewPhoto())
+        let newPhoto = Photo(description: text, image: data, date: getTimeStamp(), id: Photo.getIDForNewPhoto())
         do {
             try? PhotoPersistenceHelper.manager.save(newPhoto: newPhoto)
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
             }
         }
-        if let parent = delegate {
-            parent.loadUserJournal()
+        delegate?.loadUserJournal()
+    }
+    
+    private func checkPhotoLibraryAccess() {
+        let status = PHPhotoLibrary.authorizationStatus()
+        
+        switch status {
+        case .authorized:
+            presentImagePicker()
+            
+        case .denied:
+            let alertVC = UIAlertController(title: "Denied", message: "Photo Library access is required to use this app. Please change your preference in the Settings app", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction (title: "Ok", style: .default, handler: nil))
+            self.present(alertVC, animated: true, completion: nil)
+            
+        case .restricted:
+            print("restricted")
+            
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({status in
+                switch status {
+                case .authorized:
+                    self.photoLibraryAccess = true
+                    print(status)
+                case .denied:
+                    self.photoLibraryAccess = false
+                    print("denied")
+                case .notDetermined:
+                    print("not determined")
+                case .restricted:
+                    print("restricted")
+                }
+            })
         }
     }
     
-    private func setTextViewPlaceholder(){    descriptionTextView.text = "Enter photo description..."
-        descriptionTextView.textColor = UIColor.lightGray
+    func getTimeStamp() -> String {
+        let currentData = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM-dd-yyyy, h:mm a"
+        
+        return dateFormatter.string(from: currentData)
     }
     
-    //MARK: -- Methods
+    private func setDarkMode(){
+        [photoLibraryButton, cameraButton].forEach({$0?.tintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)})
+        toolBar.barStyle = .black
+        toolBar.barTintColor = #colorLiteral(red: 0.09329102188, green: 0.09929855913, blue: 0.1066427454, alpha: 1)
+        visualBlurEffect.effect = UIBlurEffect(style: .dark)
+    }
+    
+    private func setLightMode(){
+         [photoLibraryButton, cameraButton].forEach({$0?.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)})
+         toolBar.barStyle = .default
+         toolBar.barTintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+         visualBlurEffect.effect = UIBlurEffect(style: .extraLight)
+     }
+    
+    private func checkUserSelectedTheme(){
+        isInDarkmode == true ? setDarkMode() : setLightMode()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTextViewPlaceholder()
+        setUpView()
+        checkUserSelectedTheme()
     }
 }
 
+//MARK: -- Extensions
 extension AddPhotoViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
@@ -72,13 +177,6 @@ extension AddPhotoViewController: UITextViewDelegate {
         if textView.textColor == UIColor.lightGray {
             textView.text = nil
             textView.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            textView.text = "Enter photo description..."
-            textView.textColor = UIColor.lightGray
         }
     }
 }
