@@ -10,7 +10,7 @@ import Foundation
 
 struct PhotoPersistenceHelper {
     private init() {}
-    private let persistenceHelper = PersistenceHelper<Photo>(fileName: "photoJournal.plist")
+    private let persistenceHelper = PersistenceHelper<Photo>(fileName: "photoJournals.plist")
 
     static let manager = PhotoPersistenceHelper()
     

@@ -209,13 +209,25 @@
                                             <rect key="frame" x="125" y="154" width="165" height="165"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Anthony R. Gonzalez" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xvb-VG-AER">
-                                            <rect key="frame" x="82" y="354" width="250" height="36"/>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UjX-4l-Mw1">
+                                            <rect key="frame" x="357" y="46" width="42" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="25"/>
-                                            <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                            <state key="normal" title="Save"/>
+                                            <connections>
+                                                <action selector="saveButtonPressed:" destination="vQc-qJ-bpy" eventType="touchUpInside" id="3zy-mI-Kbb"/>
+                                            </connections>
+                                        </button>
+                                        <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Anthony R. Gonzalez" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lk2-iX-lvg">
+                                            <rect key="frame" x="53" y="354" width="308" height="36"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="textColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                            <connections>
+                                                <outlet property="delegate" destination="vQc-qJ-bpy" id="ZtC-DF-RPz"/>
+                                            </connections>
+                                        </textField>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </view>
@@ -228,13 +240,13 @@
                     <connections>
                         <outlet property="bannerImage" destination="Kje-tI-HV6" id="4vv-iH-Viz"/>
                         <outlet property="profileImage" destination="XZ3-sc-0xU" id="5cR-y2-Dy5"/>
+                        <outlet property="profileNameTextField" destination="lk2-iX-lvg" id="IGu-xT-SvW"/>
                         <outlet property="scrollDirectionSegment" destination="mN4-VW-XMU" id="UTF-1T-z28"/>
                         <outlet property="themeSegment" destination="Peo-CE-YbW" id="Z3b-u5-jme"/>
                         <outlet property="visualBlurEffect" destination="wbm-QJ-rvO" id="oX9-Em-DPn"/>
                         <outletCollection property="settingsLabels" destination="it5-EB-Jzn" collectionClass="NSMutableArray" id="wZf-u3-fEg"/>
                         <outletCollection property="settingsLabels" destination="r3P-PL-adZ" collectionClass="NSMutableArray" id="Oju-PX-E84"/>
                         <outletCollection property="settingsLabels" destination="u1I-Xc-ity" collectionClass="NSMutableArray" id="z5D-4z-Kc5"/>
-                        <outletCollection property="settingsLabels" destination="Xvb-VG-AER" collectionClass="NSMutableArray" id="0Tk-hM-ppz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eqA-iJ-1KP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -25,7 +25,7 @@ class PhotoViewController: UIViewController {
         }
     }
     
-    var isInDarkMode = Bool()
+    var isInDarkMode = true
     
     //MARK: -- IBActions
     @IBAction func toolBarButtonPressed(_ sender: UIBarButtonItem) {
@@ -57,7 +57,7 @@ class PhotoViewController: UIViewController {
             self.editPhoto(photoToEdit: photo)
         }
         
-        let shareAction = UIAlertAction(title: "Share", style: .default, handler: {(action) in
+        let shareAction = UIAlertAction(title: "Share", style: .default, handler: { (action) in
             self.presentShareMenu(id: id)
         })
         
@@ -78,16 +78,13 @@ class PhotoViewController: UIViewController {
     
     
     private func deletePhoto(with id: Int) {
-        DispatchQueue.global(qos: .utility).async {
-            do {
-                try PhotoPersistenceHelper.manager.deletePhoto(specificID: id)
-            } catch {}
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    self.allPhotos = try PhotoPersistenceHelper.manager.getPhotos()
-                } catch {}
-            }
-        }
+        do {
+            try PhotoPersistenceHelper.manager.deletePhoto(specificID: id)
+        } catch {}
+        
+        do {
+            self.allPhotos = try PhotoPersistenceHelper.manager.getPhotos()
+        } catch {}
     }
     
     
@@ -120,7 +117,7 @@ class PhotoViewController: UIViewController {
     
     
     private func setLightMode() {
-        isInDarkMode = false
+//        isInDarkMode = false
         view.backgroundColor = #colorLiteral(red: 0.8974782825, green: 0.7157379985, blue: 0.6262267232, alpha: 1)
         [addButton, settingsButton].forEach({$0?.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)})
         toolBar.barStyle = .default
@@ -132,14 +129,12 @@ class PhotoViewController: UIViewController {
         return true
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadPhotoJournal()
         loadUserSettings()
-        
-        for (index, photo) in allPhotos.enumerated() {
-            print( "Index:\(index), Name: \(photo.description), ID: \(photo.id.description))")
-        }
+        print(isInDarkMode)
     }
 }
 
@@ -150,7 +145,8 @@ extension PhotoViewController: UICollectionViewDataSource {
             
             noDataLabel.text = "You have no photos added. Tap the + button to get started."
             noDataLabel.numberOfLines = 2
-            noDataLabel.textColor = #colorLiteral(red: 0.7722676396, green: 0.7723984122, blue: 0.7722503543, alpha: 0.6343254842)
+            let textColor = isInDarkMode == true ? #colorLiteral(red: 0.7722676396, green: 0.7723984122, blue: 0.7722503543, alpha: 0.6343254842) : #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+            noDataLabel.textColor = textColor
             noDataLabel.textAlignment = .center
             pictureCollectionView.backgroundView = noDataLabel
         } else {
@@ -188,7 +184,12 @@ extension PhotoViewController: loadUserDataDelegate {
 extension PhotoViewController: setSettingsDelegate {
     func loadUserSettings() {
         let savedUserTheme = UserDefaultsWrapper.shared.getTheme()
-        savedUserTheme == 0 ? setDarkMode() : setLightMode()
+        if savedUserTheme == 0 {
+            setDarkMode()
+        } else {
+            setLightMode()
+        }
+//        savedUserTheme == 0 ? setDarkMode() : setLightMode()
         
         let savedUserScrollDirection = UserDefaultsWrapper.shared.getScrollDirection()
         let scrollDirection = savedUserScrollDirection == 0 ? UICollectionView.ScrollDirection.vertical : UICollectionView.ScrollDirection.horizontal

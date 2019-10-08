@@ -9,6 +9,19 @@
 import Foundation
 
 struct PersistenceHelper<T: Codable> {
+    
+    func saveSingleElement(newElement: T) throws {
+        var element = try getSingleElement()
+        element = newElement
+        let serializedData = try PropertyListEncoder().encode(element)
+        try serializedData.write(to: url, options: .atomic)
+    }
+    
+    func getSingleElement() throws -> T? {
+        guard let data = FileManager.default.contents(atPath: url.path) else {return nil}
+        return try PropertyListDecoder().decode(T.self, from: data)
+    }
+    
     func getObjects() throws -> [T] {
         guard let data = FileManager.default.contents(atPath: url.path) else { return [] }
         return try PropertyListDecoder().decode([T].self, from: data)
@@ -20,6 +33,7 @@ struct PersistenceHelper<T: Codable> {
         let serializedData = try PropertyListEncoder().encode(elements)
         try serializedData.write(to: url, options: Data.WritingOptions.atomic)
     }
+    
     
     func replace(elements: [T]) throws { //Used for deletion
          let serializedData = try PropertyListEncoder().encode(elements)

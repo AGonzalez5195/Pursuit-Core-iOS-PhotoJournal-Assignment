@@ -42,7 +42,6 @@ class AddPhotoViewController: UIViewController {
         saveEntry()
     }
     //MARK: -- Methods
-    
     private func saveEntry(){
         guard let text = descriptionTextView.text else { return }
         guard let image = image.image else { return }
@@ -125,21 +124,25 @@ class AddPhotoViewController: UIViewController {
         toolBar.barStyle = .black
         toolBar.barTintColor = #colorLiteral(red: 0.09329102188, green: 0.09929855913, blue: 0.1066427454, alpha: 1)
         visualBlurEffect.effect = UIBlurEffect(style: .dark)
+        let textColor = currentState == .isEditingPhoto ? #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) : .lightGray
+        descriptionTextView.textColor = textColor
     }
     
     
     private func setLightMode(){
         [photoLibraryButton, cameraButton].forEach({ $0?.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) })
+        descriptionTextView.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         toolBar.barStyle = .default
         toolBar.barTintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         visualBlurEffect.effect = UIBlurEffect(style: .extraLight)
+        let textColor = currentState == .isEditingPhoto ? #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) : .lightGray
+        descriptionTextView.textColor = textColor
     }
     
     
     private func checkUserSelectedTheme(){
         isInDarkmode == true ? setDarkMode() : setLightMode()
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
