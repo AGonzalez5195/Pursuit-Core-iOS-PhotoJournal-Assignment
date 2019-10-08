@@ -117,7 +117,7 @@ class PhotoViewController: UIViewController {
     
     
     private func setLightMode() {
-//        isInDarkMode = false
+        isInDarkMode = false
         view.backgroundColor = #colorLiteral(red: 0.8974782825, green: 0.7157379985, blue: 0.6262267232, alpha: 1)
         [addButton, settingsButton].forEach({$0?.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)})
         toolBar.barStyle = .default
@@ -129,6 +129,10 @@ class PhotoViewController: UIViewController {
         return true
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        UserDefaultsWrapper.shared.store(scrollDirection: 0) //vertical
+        UserDefaultsWrapper.shared.store(Theme: 0) //dM
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,13 +187,12 @@ extension PhotoViewController: loadUserDataDelegate {
 
 extension PhotoViewController: setSettingsDelegate {
     func loadUserSettings() {
-        let savedUserTheme = UserDefaultsWrapper.shared.getTheme()
+        guard let savedUserTheme = UserDefaultsWrapper.shared.getTheme() else { return setDarkMode() }
         if savedUserTheme == 0 {
             setDarkMode()
         } else {
             setLightMode()
         }
-//        savedUserTheme == 0 ? setDarkMode() : setLightMode()
         
         let savedUserScrollDirection = UserDefaultsWrapper.shared.getScrollDirection()
         let scrollDirection = savedUserScrollDirection == 0 ? UICollectionView.ScrollDirection.vertical : UICollectionView.ScrollDirection.horizontal
