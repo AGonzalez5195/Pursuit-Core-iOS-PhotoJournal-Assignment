@@ -129,9 +129,11 @@ class PhotoViewController: UIViewController {
         return true
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        UserDefaultsWrapper.shared.store(scrollDirection: 0) //vertical
-        UserDefaultsWrapper.shared.store(Theme: 0) //dM
+    private func setDefaultScroll () {
+        let scrollDirectionDefault = UICollectionView.ScrollDirection.vertical
+        if let collectionViewFlowLayout = pictureCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                  collectionViewFlowLayout.scrollDirection = scrollDirectionDefault
+              }
     }
     
     override func viewDidLoad() {
@@ -194,7 +196,11 @@ extension PhotoViewController: setSettingsDelegate {
             setLightMode()
         }
         
-        let savedUserScrollDirection = UserDefaultsWrapper.shared.getScrollDirection()
+        
+        guard let savedUserScrollDirection = UserDefaultsWrapper.shared.getScrollDirection() else {
+            return setDefaultScroll() }
+            
+        
         let scrollDirection = savedUserScrollDirection == 0 ? UICollectionView.ScrollDirection.vertical : UICollectionView.ScrollDirection.horizontal
         
         if let collectionViewFlowLayout = pictureCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
